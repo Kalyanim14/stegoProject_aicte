@@ -1,41 +1,45 @@
 import cv2
-import numpy as np
+import os
 
-def decrypt_message(image_path, original_message_length, password):
-    img = cv2.imread("encryptedImage.png")
+def decrypt_message(image_path):
+    if not os.path.exists(image_path):
+        print("Error: Encrypted image file not found.")
+        return
 
+    img = cv2.imread(image_path)
+    
     if img is None:
-        print("Error: Image not found!")
+        print("Error: Could not open or find the image.")
         return
 
     c = {i: chr(i) for i in range(255)}
 
+    try:
+        with open("password.txt", "r") as f:
+            stored_password = f.read().strip()
+    except FileNotFoundError:
+        print("Error: Password file not found.")
+        return
+
+    entered_password = input("Enter passcode for decryption: ").strip()
+
+    if entered_password != stored_password:
+        print("YOU ARE NOT AUTHORIZED!")
+        return
+
+    # Retrieve message length from the first pixel
+    msg_length = img[0, 0, 0]  # Read from Red channel
+    
     n, m, z = 0, 0, 0
     message = ""
 
-    pas = input("Enter passcode for decryption: ")
-    
-    if password == pas:
-        for _ in range(original_message_length):
-            pixel_value = int(img[n, m, z])  # Convert uint8 to int
+    for i in range(msg_length):  # Read only stored characters
+        n, m = divmod(i + 1, img.shape[1])
+        message += c[img[n, m, z]]
+        z = (z + 1) % 3
 
-            if pixel_value in c:
-                message += c[pixel_value]
-            else:
-                print(f"Error: Unexpected pixel value {pixel_value} detected.")
-                return
-            
-            n += 1
-            m += 1
-            z = (z + 1) % 3
-
-        print("Decrypted message:", message)
-    else:
-        print("YOU ARE NOT AUTHORIZED!")
+    print("Decrypted message:", message)
 
 if __name__ == "__main__":
-    img_path = input("Enter the encrypted image path: ")
-    msg_length = int(input("Enter the length of the original message: "))
-    password = input("Enter the original passcode: ")
-
-    decrypt_message(img_path, msg_length, password)
+    image_path = input("Enter encrypted image path: ").strip()
+    decrypt_message(image_path)
