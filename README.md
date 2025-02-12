@@ -23,7 +23,8 @@ A secure and efficient Python-based steganography tool that hides secret message
 while providing the path we should add double slash to the path as slash is an escape character
 
 For example path is ==>  K:\aicte\image\mypic.png
-\n The input should be like this ==> K:\\aicte\\image\\mypic.png
+
+The input should be like this ==> K:\\aicte\\image\\mypic.png
 
 ### **Encrypt a Message into an Image**  
 Run the encryption script:  
