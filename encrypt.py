@@ -1,29 +1,37 @@
 import cv2
-import numpy as np
+import os
 
-def encrypt_message(image_path, message, password, output_image="encryptedImage.png"):
-    img = cv2.imread("mypic.png")
-
+def encrypt_message(image_path, output_path, message, password):
+    img = cv2.imread(image_path)
+    
     if img is None:
-        print("Error: Image not found!")
+        print("Error: Could not open or find the image.")
         return
     
     d = {chr(i): i for i in range(255)}
-
+    
     n, m, z = 0, 0, 0
 
-    for char in message:
+    # Store message length in the first pixel
+    msg_length = len(message)
+    img[0, 0] = [msg_length, 0, 0]  # Store length in Red channel
+    
+    for i, char in enumerate(message):
+        n, m = divmod(i + 1, img.shape[1])  # Ensure within bounds
         img[n, m, z] = d[char]
-        n += 1
-        m += 1
         z = (z + 1) % 3
+    
+    cv2.imwrite(output_path, img)
+    print(f"Message encrypted and saved as {output_path}")
 
-    cv2.imwrite(output_image, img)
-    print(f"Message encrypted and saved as {output_image}")
+    with open("password.txt", "w") as f:
+        f.write(password)
 
 if __name__ == "__main__":
-    img_path = input("Enter the image path: ")
-    msg = input("Enter secret message: ")
+    image_path = input("Enter image path: ").strip()
+    output_path = "mypic.png"
+    message = input("Enter secret message: ")
     password = input("Enter a passcode: ")
     
-    encrypt_message(img_path, msg, password)
+    encrypt_message(image_path, output_path, message, password)
+    os.system(f"start {output_path}")  # Opens the encrypted image (Windows)
