@@ -20,6 +20,11 @@ A secure and efficient Python-based steganography tool that hides secret message
 
 ## **Usage**  
 
+while providing the path we should add double slash to the path as slash is an escape character
+
+for example path is ==>  K:\aicte\image\mypic.png
+the input should be like this ==> K:\\aicte\\image\\mypic.png
+
 ### **Encrypt a Message into an Image**  
 Run the encryption script:  
 ```bash
